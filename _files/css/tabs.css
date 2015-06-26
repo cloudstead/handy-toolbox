@@ -1,0 +1,37 @@
+/* adapted from: http://tech.pro/tutorial/623/javascript-and-css-tutorial-dynamic-tabbed-panels */
+.tabControl {
+    width:415px;
+}
+
+.lowTab, .highTab {
+    background-repeat:no-repeat;
+    width:75px;
+}
+
+.lowTab {
+    background-image:url('/sites/default/files/30/images/tab_inactive_75x20.gif');
+    cursor:pointer;
+}
+
+.highTab {
+    background-image:url('/sites/default/files/30/images/tab_active_75x20.gif');
+}
+
+.tabHolder {
+    width:100%;
+    height:20px;
+    border-collapse:collapse;
+    border-spacing:0px;
+    -moz-user-select:none;
+}
+
+.tabPanel {
+    top:20px;
+    left:0px;
+    width:100%;
+    height:50px;
+    background-color:#cad7e3;
+    border:1px solid #3c597b;
+}
+
+.da-center {margin: 0 auto;}

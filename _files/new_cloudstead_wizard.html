@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prepare a New Cloudstead</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <link rel="stylesheet" type="text/css" href="css/tabs.css" media="all" />
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css" media="all" />
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.structure.min.css" media="all" />
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.theme.min.css" media="all" />
+
+    <script type="text/javascript" src="lib/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="lib/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="lib/tabs.js"></script>
+
+    <script type="text/javascript" src="js/init_config.js"></script>
+    <script type="text/javascript" src="js/toolbox.js"></script>
+
+<!-- Load all localized strings -->
+<!--@@LOCALIZATIONS@@-->
+
+    <!-- generated at distribution build-time -->
+    <script type="text/javascript" src="js/apps.js"></script>
+
+    <!-- todo: why are tooltips not working?? -->
+    <script> $(function() { $( document ).tooltip(); }); </script>
+</head>
+<body>
+
+<!--
+This file only exists in a built cloudos-dist package.
+Prevents this tool from being used directly from the source repository, which will not work.
+-->
+<img src="img/dist-pixel.png" onerror="not_dist();" />
+
+<!-- adapted from http://tech.pro/tutorial/623/javascript-and-css-tutorial-dynamic-tabbed-panels -->
+<div id="mainConfig"></div>
+
+<!-- adapted from http://tech.pro/tutorial/623/javascript-and-css-tutorial-dynamic-tabbed-panels -->
+<script type="text/javascript">
+    $(function() {
+        var tabController = createTabPanel('mainConfig');
+        for (var tab in INIT_CONFIG) {
+            if (INIT_CONFIG.hasOwnProperty(tab)) {
+                var config = INIT_CONFIG[tab];
+                var localized = TRANSLATIONS[LOCALE][tab];
+                createTab(tabController, tab, config, localized);
+            }
+        }
+        createAppsTab(tabController, APPS.app);
+        createLaunchTab(tabController);
+    });
+</script>
+
+</body>
+</html>

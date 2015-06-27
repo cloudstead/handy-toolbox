@@ -20,7 +20,7 @@
 #                    if undefined, we assume all dependencies have been built and all artifacts are available.
 #
 #   CLOUDOS_DIR    : if defined, the path to the main cloudos source repository, for builds and asset retrieval.
-#                    if undefined, the default path is ../../cloudos relative to the path to this script.
+#                    if undefined, the default is a directory named cloudos in the path to this script.
 #
 #   DIST_NOCLEAN   : if defined, the dist directory will not be removed before building the archives.
 #                    if undefined, the dist directory will be removed before building the archives.
@@ -41,8 +41,13 @@ function usage {
 THISDIR="$(cd $(dirname ${0}) && pwd)"
 
 # Parse arguments
-if [[ -z "${CLOUDOS_DIR}" ]] ; then
-  CLOUDOS_DIR="$(cd ${THISDIR}/../../cloudos && pwd)"
+if [ -z "${CLOUDOS_DIR}" ] ; then
+  CLOUDOS_DIR=$(echo ${THISDIR} | egrep -o '.+/cloudos/')
+  if [ -z "${CLOUDOS_DIR}" ] ; then
+    die "No cloudos-dir provided"
+  else
+    echo "Detected CLOUDOS_DIR=${CLOUDOS_DIR}"
+  fi
 else
   # normalize possible relative paths, ensure it's actually a directory
   CLOUDOS_DIR=$(cd ${CLOUDOS_DIR} && pwd) || usage && die "Invalid CLOUDOS_DIR env var: ${CLOUDOS_DIR}"
@@ -95,22 +100,22 @@ CLOUDOS_SERVER="${CLOUDOS_DIR}/cloudos-server"
 BUNDLER_JAR="${APPSTORE_COMMON}/target/cloudos-app-bundler.jar"
 CLOUDOS_APPS=${CLOUDOS_DIR}/cloudos-apps
 
-CLOUDOS_TARBALL="$(find ${CLOUDOS_SERVER}/target -maxdepth 1 -type f -name "cloudos-server-*.jar")"
+CLOUDOS_TARBALL="$(find ${CLOUDOS_SERVER}/target -maxdepth 1 -type f -name "cloudos-server.tar.gz")"
 CLOUDOS_CHEF="${CLOUDOS_SERVER}/chef-repo"
 
 if [ ! -z "${DIST_BUILD}" ] ; then
     echo "running build_dist..."
-    ${THISDIR}/build_dist.sh
+    ${THISDIR}/build_artifacts.sh
 else
     echo "skipping build_dist..."
 fi
 
 # validate we have required artifcats
 if [[ -z "${CLOUDOS_TARBALL}" || ! -f ${CLOUDOS_TARBALL} ]] ; then
-  die "${CLOUDOS_TARBALL} has not been built, and DIST_BUILD env var was not set. Cannot create distribution archive."
+  die "cloudos-tarball (${CLOUDOS_TARBALL}) has not been built, and DIST_BUILD env var was not set. Cannot create distribution archive."
 fi
 if [[ -z "${BUNDLER_JAR}" || ! -f ${BUNDLER_JAR} ]] ; then
-  die "${BUNDLER_JAR} has not been built, and DIST_BUILD env var was not set. Cannot create distribution archive."
+  die "bundler-jar (${BUNDLER_JAR}) has not been built, and DIST_BUILD env var was not set. Cannot create distribution archive."
 fi
 
 # start fresh
@@ -236,8 +241,6 @@ EOF
 else
   ARCHIVE_NAME="handy-toolbox-snapshot-$(date +%Y-%m-%d)"
 fi
-
-exit 0
 
 # Roll it all up.
 cd ${DIST_ROOT}

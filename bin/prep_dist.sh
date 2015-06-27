@@ -86,11 +86,11 @@ fi
 
 DIST_SRC_ROOT="$(cd $(dirname $0)/.. && pwd)"
 DIST_SRC_DOCS="${DIST_SRC_ROOT}/docs"
-DIST_SRC_FILES="${DIST_SRC_ROOT}/_files"
+DIST_SRC_FILES="${DIST_SRC_ROOT}/web"
 
 DIST_ROOT="${DIST_SRC_ROOT}/dist"
 DIST_BASE="${DIST_ROOT}/build"
-DIST_FILES="${DIST_BASE}/_files"    # supporting files for tools
+DIST_FILES="${DIST_BASE}/web"       # supporting files for tools
 DIST_CHEF="${DIST_BASE}/launcher"   # chef-repo
 CHEF_DATAFILES="${DIST_CHEF}/data_files/cloudos"
 DIST_BIN="${DIST_BASE}/bin"
@@ -159,7 +159,7 @@ ${RSYNC} ${HTML_APPS} ${DIST_BASE}
 # load all localizations for HTML files in DIST_BASE
 translation_files=""
 for t in $(cd ${DIST_FILES}/strings && ls -1 localized_*.js | xargs basename) ; do
-  translation_files="${translation_files} <script type='text/javascript' src=\"_files/strings/${t}\"></script>"
+  translation_files="${translation_files} <script type='text/javascript' src=\"web/strings/${t}\"></script>"
 done
 for html in $(ls -1 ${DIST_BASE}/*.html) ; do
   sed -i '' -e "s,<!--@@LOCALIZATIONS@@-->,${translation_files}," "${html}" && echo "successful sed run for ${html}"

@@ -1,8 +1,8 @@
 INIT_CONFIG = {
     dns: {
         fields: {
-            parent_domain: 'fqdn',
-            hostname: 'hostname'
+            hostname: 'hostname',
+            parent_domain: 'fqdn'
         },
         sub_tabs: [ 'dyndns', 'djbdns' ],
         dyndns: {

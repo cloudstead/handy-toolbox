@@ -25,6 +25,8 @@
 #   DIST_NOCLEAN   : if defined, the dist directory will not be removed before building the archives.
 #                    if undefined, the dist directory will be removed before building the archives.
 #
+#   DIST_NOARCHIVE : if defined, do not create the distribution archives. Cannot be used with -r/--release.
+#                    if undefined, the distribution archives will be created
 #
 
 function die {
@@ -190,13 +192,13 @@ if [ ! -z "$(which pandoc)" ] ; then
 fi
 
 # Cloudstead launch helper tool
+MANIFESTS="$(find ${CLOUDOS_APPS}/apps -maxdepth 2 -type f -name cloudos-manifest.json)"
 
 # Build apps.js if it does not exist
 if [ ! -f ${DIST_FILES}/js/apps.js ] ; then
 
   JSON="java -cp ${BUNDLER_JAR} org.cobbzilla.util.json.main.JsonEditor"
   apps=""
-  MANIFESTS="$(find ${CLOUDOS_APPS}/apps -maxdepth 2 -type f -name cloudos-manifest.json)"
   for manifest in ${MANIFESTS} ; do
     app=$(basename $(dirname ${manifest}))
     level=$(cat ${manifest} | ${JSON} --path level --operation read | tr -d '"') || die "Error determining level: ${manifest}"
@@ -204,7 +206,7 @@ if [ ! -f ${DIST_FILES}/js/apps.js ] ; then
       level="app"
     fi
     apps="${apps}
-  APPS.${level}.$(echo ${app} | tr '-' '_')= $(cat ${manifest});"
+  APPS.${level}.$(echo ${app} | tr '-' '_')=\"${app}\";"
   done
 
     cat > ${DIST_FILES}/js/apps.js <<EOF
@@ -216,6 +218,20 @@ if [ ! -f ${DIST_FILES}/js/apps.js ] ; then
 EOF
 
 fi
+
+# Copy per-app manifest, config-metadata and translations, if found
+for manifest in ${MANIFESTS} ; do
+  app_dir="$(dirname ${manifest})"
+  app="$(basename ${app_dir})"
+  app_js_dir="${DIST_FILES}/js/apps/${app}"
+
+  mkdir -p "${app_js_dir}" || die "Error creating directory: ${app_js_dir}"
+
+  app_databags="${app_dir}/dist/build/chef/data_bags/${app}/*.json"
+  if [ ! -z "$(ls -1 ${app_databags} 2> /dev/null)" ] ; then
+    cp ${app_databags} ${app_js_dir} || die "Error copying ${app_databags} -> ${app_js_dir}"
+  fi
+done
 
 # Marker file. Config preparer app checks to see if this file exists to determine if it is being run
 # from the source tree, or from a packaged distribution. Running from source will have many errors
@@ -243,13 +259,15 @@ else
 fi
 
 # Roll it all up.
-cd ${DIST_ROOT}
-cp -R ${DIST_BASE} ${ARCHIVE_NAME}
-tar czf ${ARCHIVE_NAME}.tar.gz ${ARCHIVE_NAME}
-zip -r ${ARCHIVE_NAME}.zip ${ARCHIVE_NAME}
+if [ -z "${DIST_NOARCHIVE}" ] ; then
+  cd ${DIST_ROOT}
+  cp -R ${DIST_BASE} ${ARCHIVE_NAME}
+  tar czf ${ARCHIVE_NAME}.tar.gz ${ARCHIVE_NAME}
+  zip -r ${ARCHIVE_NAME}.zip ${ARCHIVE_NAME}
 
-# rsync the release version?
-if [ ! -z "${RELEASE_DEST}" ] ; then
-  ${RSYNC} ${ARCHIVE_NAME}.* ${RELEASE_DEST}
-  echo "complete"
+  # rsync the release version?
+  if [ ! -z "${RELEASE_DEST}" ] ; then
+    ${RSYNC} ${ARCHIVE_NAME}.* ${RELEASE_DEST}
+    echo "complete"
+  fi
 fi

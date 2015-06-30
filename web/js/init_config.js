@@ -1,65 +1,39 @@
 INIT_CONFIG = {
     dns: {
-        fields: {
-            hostname: 'hostname',
-            parent_domain: 'fqdn'
-        },
+        fields: [ 'hostname', 'parent_domain' ],
         sub_tabs: [ 'dyndns', 'djbdns' ],
         dyndns: {
             exclusive: 'provider',
-            fields: {
-                account: 'text',
-                user: 'text',
-                password: 'password',
-                zone: 'fqdn'
-            }
+            fields: [ 'dns.account', 'dns.user', 'dns.password', 'dns.zone' ]
         },
         djbdns: {
             exclusive: 'provider',
-            fields: {
-                allow_axfr: 'list/ipaddr'
-            }
+            fields: [ 'djbdbs/init/allow_axfr' ]
         }
     },
 
     ssl: {
-        fields: {
-            cert_key_file: 'file/certs/ssl-https.key',
-            cert_pem_file: 'file/certs/ssl-https.pem'
+        files: {
+            cert_key: 'certs/ssl-https.key',
+            cert_pem: 'certs/ssl-https.pem'
         }
     },
 
     smtp: {
-        fields: {
-            username: 'text',
-            password: 'password',
-            host: 'fqdn',
-            port: 'port'
-        }
+        field_prefix: 'email/init',
+        fields: [ 'username', 'password', 'host', 'port' ]
     },
 
     two_factor: {
-        fields: {
-            user: 'text',
-            base_uri: 'pick_one'
-        },
-        choices: {
-            base_uri: ['https://api.authy.com', 'http://sandbox-api.authy.com']
-        }
+        fields: ['authy.user', 'authy.base_uri']
     },
 
     storage: {
-        fields: {
-            aws_access_key: 'text',
-            aws_secret_key: 'text',
-            s3_bucket: 'text',
-            aws_iam_user: 'text',
-            backup_cron_schedule: 'time_of_day'
-        }
+        fields: ['aws_access_key', 'aws_secret_key', 's3_bucket', 'aws_iam_user', 'backup_cron_schedule']
     },
 
     geoip: {
-        fields: {
+        files: {
             GeoIP: 'file/data_files/geoip/GeoIP.dat.gz',
             GeoLiteCity: 'file/data_files/geoip/GeoLiteCity.dat.gz',
             GeoIP2_City: 'file/data_files/geoip/GeoIP2-City.mmdb.gz',
@@ -69,9 +43,6 @@ INIT_CONFIG = {
     },
 
     claim: {
-        fields: {
-            recovery_email: 'email',
-            admin_initial_pass: 'password'
-        }
+        fields: ['recovery_email', 'admin_initial_pass']
     }
 };

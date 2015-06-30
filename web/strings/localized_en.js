@@ -66,8 +66,8 @@ TRANSLATIONS['en'] = {
     },
 
     smtp: {
-        tab: 'SMTP',
-        title: 'Setup SMTP services for sending email',
+        tab: 'Email',
+        title: 'Setup email delivery services',
         description: 'Your cloudstead cannot deliver email by itself. The Internet is so overrun with spam these days ' +
         'that any time a brand new server pops up on the Internet and tries to send email, most other email servers ' +
         'in the world will not trust it. They will either totally ignore it, or will pretend to respond but actually not ' +

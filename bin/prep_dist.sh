@@ -151,42 +151,29 @@ ${RSYNC} ${CLOUDOS_SERVER}/target/api-examples ${CHEF_DATAFILES}
 ${RSYNC} ${CLOUDOS_SERVER}/target/miredot ${CHEF_DATAFILES}/api-docs
 
 # docs
-MD_FILES="$(cd ${DIST_SRC_ROOT} && find . -type f -name "*.md")"
+MD_FILES="$(cd ${DIST_SRC_ROOT} && find . -maxdepth 3 -type f -name "*.md")"
 HTML_APPS="${DIST_SRC_ROOT}/*.html"
 
 ${RSYNC} ${DIST_SRC_FILES}/* ${DIST_FILES}/
 ${RSYNC} ${MD_FILES} ${DIST_BASE}
 ${RSYNC} ${HTML_APPS} ${DIST_BASE}
 
-# load all localizations for HTML files in DIST_BASE
-translation_files=""
-for t in $(cd ${DIST_FILES}/strings && ls -1 localized_*.js | xargs basename) ; do
-  translation_files="${translation_files} <script type='text/javascript' src=\"web/strings/${t}\"></script>"
-done
-for html in $(ls -1 ${DIST_BASE}/*.html) ; do
-  sed -i '' -e "s,<!--@@LOCALIZATIONS@@-->,${translation_files}," "${html}" && echo "successful sed run for ${html}"
-done
-
-# load all localizations for HTML files in DIST_FILES
-translation_files=""
-for t in $(cd ${DIST_FILES}/strings && ls -1 localized_*.js | xargs basename) ; do
-  translation_files="${translation_files} <script type='text/javascript' src=\"strings/${t}\"></script>"
-done
-for html in $(ls -1 ${DIST_FILES}/*.html) ; do
-  sed -i '' -e "s,<!--@@LOCALIZATIONS@@-->,${translation_files}," "${html}" && echo "successful sed run for ${html}"
-done
-
-
-# if we have pandoc, generate
+# if we have pandoc, generate docs
 if [ ! -z "$(which pandoc)" ] ; then
   for doc in ${MD_FILES} ; do
     doc_dir="$(dirname ${doc})"
     doc_name="$(basename ${doc} | awk -F '.' '{print $1}')"
-    for format in html pdf rtf ; do
-      output_dir="${DIST_BASE}/${doc_dir}"
-      mkdir -p ${output_dir} && \
-        cat ${doc} | sed -e 's/ href=\"\(.*\)\.md\"/ href=\"\1\.'${format}'\"/' \
-          | pandoc -t ${format} > ${output_dir}/${doc_name}.${format}
+    output_dir="${DIST_BASE}/${doc_dir}"
+    mkdir -p ${output_dir} || die "Error creating output_dir: ${output_dir}"
+    for format in html rtf ; do
+      cat ${doc} | sed -e 's/ href=\"\(.*\)\.md\"/ href=\"\1\.'${format}'\"/' \
+        | pandoc -t ${format} -o ${output_dir}/${doc_name}.${format} \
+        || die "Error generating doc ${doc} in format ${format}"
+
+      # If we just produced HTML output, try to also produce PDF output based on the HTML
+      if [[ ${format} == "html" && ! -z $(which xvfb-run) && ! -z $(which wkhtmltopdf) ]] ; then
+        xvfb-run -a -s "-screen 0 640x480x16" wkhtmltopdf ${output_dir}/${doc_name}.${format} ${output_dir}/${doc_name}.pdf
+      fi
     done
   done
 fi

@@ -159,7 +159,7 @@ ${RSYNC} ${MD_FILES} ${DIST_BASE}
 ${RSYNC} ${HTML_APPS} ${DIST_BASE}
 
 # if we have pandoc, generate docs
-if [ ! -z "$(which pandoc)" ] ; then
+if [ ! -z $(which pandoc) ] ; then
   for doc in ${MD_FILES} ; do
     doc_dir="$(dirname ${doc})"
     doc_name="$(basename ${doc} | awk -F '.' '{print $1}')"
@@ -172,6 +172,7 @@ if [ ! -z "$(which pandoc)" ] ; then
 
       # If we just produced HTML output, try to also produce PDF output based on the HTML
       if [[ ${format} == "html" && ! -z $(which xvfb-run) && ! -z $(which wkhtmltopdf) ]] ; then
+        # more formatting options: http://wkhtmltopdf.org/usage/wkhtmltopdf.txt
         xvfb-run -a -s "-screen 0 640x480x16" wkhtmltopdf ${output_dir}/${doc_name}.${format} ${output_dir}/${doc_name}.pdf
       fi
     done

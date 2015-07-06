@@ -1,11 +1,11 @@
 {
-  "name": "test_emberaaaa",
-  "title": "An HTML/JS/CSS app",
+  "name": "handy_toolbox",
+  "title": "Toll for configuring your Cloudstead instance",
   "version": "0.0.1",
   "private": true,
   "author": {
-    "name": "John Doe",
-    "company": "ACME, Inc."
+    "name": "Bojan Mojsilovic",
+    "company": "Itekako"
   },
   "devDependencies": {
     "lineman": ">= 0.24.4",

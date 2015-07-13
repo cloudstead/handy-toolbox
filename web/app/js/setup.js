@@ -50,6 +50,16 @@ App.WizardRoute = Ember.Route.extend({
 App.WizardController = Ember.Controller.extend({
 	actions: {
 		updateSelection: function(data){
+			var isValid = true;
+			$.each(Validator.ElementsForValidation(), function(index, elem){
+				if(!Validator.ValidateField(elem)){
+					isValid = false;
+				}
+			});
+			
+			if(!isValid){ return; }
+			
+			// OK, EVERYTHING IS VALID GO TO SELECTED TAB
 			$("#sidebar>ul>li>a.menu-item").removeClass("selected");
 			$("#sidebar>ul>li>a.menu-item." + data).addClass("selected");
 			this.send('goToSubRoute', data);
@@ -74,6 +84,18 @@ ROUTES.forEach(function(route){
 			} else {
 				this.render('generic');
 			}
+		},
+		afterModel: function(model, transition) {
+			transition.then(function() {
+				// Done transitioning
+				Ember.run.schedule('afterRender', self, function () {
+					$.each(Validator.ElementsForValidation(), function(index, elem){
+						$(elem).bind("focusout", function(e) {
+							Validator.ValidateField(e.target);
+						});
+					});
+				});
+			});
 		}
 	});
 
@@ -156,6 +178,11 @@ ROUTES.forEach(function(route){
 
 		actions: {
 			activateTab: function(tab) {
+				// OFF EVENTS ON CURRENTLY ACTIVE TAB
+				$.each(Validator.ElementsOnActiveTab(), function(index, elem){
+					$(elem).unbind("focusout", "**");
+				});
+
 				console.log("ACTIVATE TAB!!!");
 				var tabGroup = this.get("subTabGroups").find(function(group){
 					return group.tabGroupName === tab.get("tabGroup");
@@ -208,19 +235,16 @@ ROUTES.forEach(function(route){
 	});
 });
 
-
-
-
 Ember.View.reopen({
 	init: function() {
 		this._super();
 		var self = this;
-
+		var attr = self.get('attributeBindings');
 		// bind attributes beginning with 'data-'
 		Em.keys(this).forEach(function(key) {
 			if (key.substr(0, 5) === 'data-') {
-				self.get('attributeBindings').pushObject(key);
+				attr.pushObject(key);
 			}
 		});
-	}
+	},
 });

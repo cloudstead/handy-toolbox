@@ -95,6 +95,8 @@ App.FieldModel.reopenClass({
 			value: "",
 			fileData: "",
 			choices: App.FieldModel.resolveChoices(fieldData.choices, translation),
+			dataKind: fieldName,
+			required: !Ember.isNone(fieldData.required) ? fieldData.required + "" : "false",
 		});
 	},
 

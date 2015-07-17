@@ -66,6 +66,7 @@ ZipGeneratorService = {
 					secondaryData = cloudosJSON;
 					break;
 				case "apps":
+					outputFolder = folders.dataBags.folder("apps");
 					break;
 			}
 

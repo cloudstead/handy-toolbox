@@ -33,7 +33,7 @@ App.WizardRoute = Ember.Route.extend({
 	wizard: Em.I18n.translations.wizard,
 	actions: {
 		goToSubRoute: function(data){
-			if(data == "apps"){
+			if(data === "apps"){
 				// this.transitionTo('app/');
 				window.location.href = "#/apps/app/default";
 			}else{
@@ -62,9 +62,9 @@ App.WizardController = Ember.Controller.extend({
 					isValid = false;
 				}
 			});
-			
+
 			if(!isValid){ return; }
-			
+
 			// OK, EVERYTHING IS VALID GO TO SELECTED TAB
 			$("#sidebar>ul>li>a.menu-item").removeClass("selected");
 			$("#sidebar>ul>li>a.menu-item." + data).addClass("selected");
@@ -81,7 +81,7 @@ App.ApplRoute = Ember.Route.extend({
 		console.log("params: ", params);
 		var data = {};
 		data.apps = [];
-		if(params.app_name == "default"){
+		if(params.app_name === "default"){
 			console.log("aplikacije sve");
 			data.isList = true;
 			for (var app in APPS.app) {
@@ -94,12 +94,12 @@ App.ApplRoute = Ember.Route.extend({
 				});
 			}
 		}else{
-			
+
 			data.isList = false;
 			data.route = params.app_name;
 		}
 		return data;
-		
+
 	},
 });
 
@@ -113,23 +113,23 @@ App.ApplController = Ember.ObjectController.extend({
 		var currentRoute = this.get("model.route");
 		return App.FieldModel.createFileAppFields(currentRoute);
 	}.property("model"),
-	
+
 	fieldDataObserver: function() {
 		var self = this, model = self.get('model'), dataObj;
-		if(model.route == undefined) { return ;}
+		if(model.route === undefined) { return ;}
 		if (Ember.isNone(DATA["apps"])) { DATA["apps"] = {}; }
 		if(Ember.isNone(DATA["apps"][model.route])){ DATA["apps"][model.route] = {}; }
-		
+
 		DATA["apps"][model.route]["fields"] = self.get("fields");
 		DATA["apps"][model.route]["tabGroups"] = {};
 	}.observes("fields.@each.value"),
 
 	fileFieldDataObserver: function() {
 		var self = this, model = self.get('model');
-		if(model.route == undefined) { return ;}
+		if(model.route === undefined) { return ;}
 		if (Ember.isNone(DATA["apps"])) { DATA["apps"] = {}; }
 		if(Ember.isNone(DATA["apps"][model.route])){ DATA["apps"][model.route] = {}; }
-		
+
 		DATA["apps"][model.route]["files"] = self.get("fileFields");
 		DATA["apps"][model.route]["tabGroups"] = {};
 	}.observes("fileFields.@each.value"),
@@ -323,7 +323,11 @@ App.BetterCheckboxComponent = Ember.Component.extend({
 		var buttonVisibility = event.target.checked;
 		var selector = "a[data-link-id='link_{ATTR}']".replace("{ATTR}", $(event.target).attr("id"));
 		console.log(buttonVisibility);
-		buttonVisibility ? $(selector).show() : $(selector).hide();
+		if (buttonVisibility) {
+			$(selector).show();
+		} else {
+			$(selector).hide();
+		}
 		this._updateElementValue();
 		this.sendAction('action', this.get('value'), this.get('checked'));
 	},

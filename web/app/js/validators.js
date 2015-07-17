@@ -5,7 +5,7 @@ Validator = {
 		var kind = Ember.isNone(elem.attr("data-kind")) ? elem.attr("data-kindtab") : elem.attr("data-kind");
 		var required = elem.attr("data-required") === "true";
 		var errorData = { isValid: true };
-	
+
 		switch(kind){
 			case "email":
 				//errorData = EmailValidator.getErrors(elem.val(), required);
@@ -47,17 +47,17 @@ Validator = {
 				console.log("===");
 				break;
 		}
-		
+
 		if(errorData.isValid){ return true;}
 		elem.notify( errorData.message, this.NotifyOptions );
 		return false;
 	},
-	
+
 	ElementsForValidation: function(){
 		var elemOnActiveTab = this.ElementsOnActiveTab();
 		var elements = $("[data-kind]");
 		$.merge(elements, elemOnActiveTab);
-		
+
 		return elements;
 	},
 
@@ -66,7 +66,7 @@ Validator = {
 		var elemOnActiveTab = $("#" + $(activeLi).attr("id") +"-tab").find("[data-kindtab]");
 		return elemOnActiveTab;
 	},
-	
+
 	EmailPattern: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
 	FqdnPattern: /^(?=.{1,254}$)((?=[a-z0-9-]{1,63}\.)(xn--+)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}$/i,
 	IPPattern: /^(([1-9]?\d|1\d\d|2[0-5][0-5]|2[0-4]\d)\.){3}([1-9]?\d|1\d\d|2[0-5][0-5]|2[0-4]\d)$/,
@@ -113,11 +113,12 @@ IPListValidator = {
 		var pattern = /^([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}$/;
 		var tokens = host.split(/\s*,\s*/);
 		var i;
-		for (i = 0; i < tokens.length; ++i)
-			if (tokens[i] != "" && !pattern.test(tokens[i])){
+		for (i = 0; i < tokens.length; ++i) {
+			if (tokens[i] !== "" && !pattern.test(tokens[i])) {
 				error.isValid = false;
 				error.message = "Not valid. Use format: xxx.xxx.xxx.xxx, where xxx is 255 maximum";
 			}
+		}
 		return error;
 	}
 };

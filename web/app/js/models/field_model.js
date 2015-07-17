@@ -30,7 +30,7 @@ App.FieldModel = Ember.Object.extend({
 			'locale': 'choice',
 			'yesno': 'checkbox'
 		};
-		
+
 		if(!INPUT_TYPES.hasOwnProperty(fieldType)){
 			fieldType = 'text';
 		}
@@ -55,7 +55,7 @@ App.FieldModel = Ember.Object.extend({
 	isTimeOfDay: function() {
 		return this.get("type").typeKind === 'cron';
 	}.property(),
-	
+
 	isCheckBox: function(){
 		return this.get("type").typeKind === 'yesno';
 	}.property()
@@ -203,12 +203,12 @@ App.FieldModel.reopenClass({
 
 		return fieldsArray;
 	},
-	
+
 	createAppFields: function(fieldAppName){
 
 		var jsonURL, fieldsData = {}, fieldData, translationURL, newField, fileData, translation = {}, fieldsArray = [],
 			fileKind = 'fields';
-		
+
 		// GET TRANSLATIONS
 		translationURL = APPS_DATA_PATH + fieldAppName + "/" + TRANSLATION_FILENAME;
 		$.ajax({
@@ -218,9 +218,9 @@ App.FieldModel.reopenClass({
 			success: function (data) { fileData = data; }
 		});
 
-		if(fileData != undefined){
-			for(transs in fileData["categories"]){
-				for(transItem in fileData["categories"][transs]){
+		if(fileData !== undefined){
+			for(var transs in fileData["categories"]){
+				for(var transItem in fileData["categories"][transs]){
 					translation[transItem] = fileData["categories"][transs][transItem];
 				}
 			}
@@ -236,10 +236,10 @@ App.FieldModel.reopenClass({
 			success: function (data) { fileData = data; }
 		});
 
-		if(fileData == undefined){ return;}
+		if(fileData === undefined){ return;}
 		console.log("fileData", fileData);
-		for(category in fileData["categories"]){
-			for(fieldName in fileData["categories"][category]['fields']){
+		for(var category in fileData["categories"]){
+			for(var fieldName in fileData["categories"][category]['fields']){
 				newField = App.FieldModel.createNew(fieldName, fileData["categories"][category][fileKind][fieldName], translation[fieldName]);
 				console.log("fieldName", fieldName);
 				fieldsArray.push(newField);
@@ -248,10 +248,10 @@ App.FieldModel.reopenClass({
 
 		return fieldsArray;
 	},
-	
+
 	createFileAppFields: function(fieldAppName) {
 		var fileKind = 'files', fileData, jsonURL, newField, fieldsArray = [], translation = {}, translationURL;
-		
+
 		// GET TRANSLATIONS
 		translationURL = APPS_DATA_PATH + fieldAppName + "/" + TRANSLATION_FILENAME;
 		$.ajax({
@@ -261,14 +261,14 @@ App.FieldModel.reopenClass({
 			success: function (data) { fileData = data; }
 		});
 
-		if(fileData != undefined){
-			for(trans in fileData["categories"]){
-				for(transItem in fileData["categories"][trans]){
+		if(fileData !== undefined){
+			for(var trans in fileData["categories"]){
+				for(var transItem in fileData["categories"][trans]){
 					translation[transItem] = fileData["categories"][trans][transItem];
 				}
 			}
 		}
-		
+
 		// CREATE FILE FIELDS
 		jsonURL = APPS_DATA_PATH + fieldAppName + "/" + METADATA_FILENAME;
 		$.ajax({
@@ -278,16 +278,16 @@ App.FieldModel.reopenClass({
 			success: function (data) { fileData = data; }
 		});
 
-		if(fileData == undefined){ return;}
-		for(category in fileData["categories"]){
-			for(fieldName in fileData["categories"][category][fileKind]){
+		if(fileData === undefined){ return;}
+		for(var category in fileData["categories"]){
+			for(var fieldName in fileData["categories"][category][fileKind]){
 				console.log("FILE => ", fieldName);
 				newField = App.FieldModel.createNew(fieldName, fileData, translation[fieldName]);
 				console.log("fieldName ==> FILE", fieldName);
 				fieldsArray.push(newField);
 			}
 		}
-		
+
 		return fieldsArray;
 	},
 

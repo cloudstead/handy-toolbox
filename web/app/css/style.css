@@ -149,17 +149,20 @@ a {
 .launch_button {
   margin: 8px 10px;
 }
-
 .clear_fix {
   clear: both;
 }
-
-.apps_label{
-	margin-top: 5px;
+.apps_label {
+  margin-top: 5px;
 }
-
-.apss_button{
-	float: right;
-	margin-bottom: 0px;
-	display: none;
+.apss_button {
+  float: right;
+  margin-bottom: 0px;
+  display: none;
+}
+.display_block {
+  display: block;
+}
+.display_none {
+  display: none;
 }

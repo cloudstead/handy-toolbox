@@ -23,7 +23,9 @@ String.prototype.toController = function () {
 getModels = function(routeName, params){
 	var data = {}; data.apps = [];
 	if(additional_routes.indexOf(routeName) > -1){
-		if(routeName === "apps"){}
+		if(routeName === "apps"){
+			
+		}
 	}else{
 		data = INIT_CONFIG[routeName];
 	}
@@ -51,3 +53,17 @@ function getFirstTranslation() {
 
 	return Ember.isNone(lang) ? TRANSLATIONS['en'] : TRANSLATIONS[lang];
 }
+
+var getValues = function(appName, dataKind, fieldType){
+	var r = "", key = "appls";
+	if(DATA[key] === undefined || DATA[key][appName] === undefined || DATA[key][appName][fieldType] === undefined){
+		return r;
+	}
+
+	for (var f in DATA[key][appName][fieldType]) {
+		if(!Ember.isNone(DATA[key][appName][fieldType][f]) && DATA[key][appName][fieldType][f]["dataKind"] == dataKind){
+			r = DATA[key][appName][fieldType][f]["value"];
+		}
+	}
+	return r;
+};

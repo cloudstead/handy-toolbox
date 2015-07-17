@@ -85,7 +85,7 @@ App.FieldModel.reopenClass({
 		return retChoices;
 	},
 
-	createNew: function(fieldName, fieldData, translation) {
+	createNew: function(fieldName, fieldData, translation, values) {
 		if (Ember.isNone(translation)) {
 			translation = {
 				label: fieldName,
@@ -98,7 +98,7 @@ App.FieldModel.reopenClass({
 			info: Ember.String.htmlSafe(translation['info']),
 			fieldType: fieldData.type,
 			fieldFilePath: fieldData.additional,
-			value: "",
+			value: values !== undefined ? values : "",
 			fileData: "",
 			choices: App.FieldModel.resolveChoices(fieldData.choices, translation),
 			dataKind: fieldName,
@@ -207,7 +207,7 @@ App.FieldModel.reopenClass({
 	createAppFields: function(fieldAppName){
 
 		var jsonURL, fieldsData = {}, fieldData, translationURL, newField, fileData, translation = {}, fieldsArray = [],
-			fileKind = 'fields';
+			fileKind = 'fields', values = "";
 
 		// GET TRANSLATIONS
 		translationURL = APPS_DATA_PATH + fieldAppName + "/" + TRANSLATION_FILENAME;
@@ -237,11 +237,10 @@ App.FieldModel.reopenClass({
 		});
 
 		if(fileData === undefined){ return;}
-		console.log("fileData", fileData);
 		for(var category in fileData["categories"]){
-			for(var fieldName in fileData["categories"][category]['fields']){
-				newField = App.FieldModel.createNew(fieldName, fileData["categories"][category][fileKind][fieldName], translation[fieldName]);
-				console.log("fieldName", fieldName);
+			for(var fieldName in fileData["categories"][category][fileKind]){
+				values = getValues(fieldAppName, fieldName, fileKind );
+				newField = App.FieldModel.createNew(fieldName, fileData["categories"][category][fileKind][fieldName], translation[fieldName], values);
 				fieldsArray.push(newField);
 			}
 		}

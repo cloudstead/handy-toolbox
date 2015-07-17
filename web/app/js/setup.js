@@ -78,23 +78,25 @@ App.WizardController = Ember.Controller.extend({
 
 App.ApplRoute = Ember.Route.extend({
 	model: function(params){
-		console.log("params: ", params);
-		var data = {};
+		var data = {}, appName;
 		data.apps = [];
+		var classes = "button tiny apss_button", applyClass;
 		if(params.app_name === "default"){
-			console.log("aplikacije sve");
 			data.isList = true;
+
 			for (var app in APPS.app) {
+				appName = APPS.app[app];
+				applyClass = DATA["apps"] !== undefined && DATA["apps"][appName] !== undefined && DATA["apps"][appName] === true ? classes + " display_block" : classes;
 				data.apps.push({
-					id: APPS.app[app],
-					appName: APPS.app[app],
-					isChecked: false,
-					appLink: "#/apps/app/" + APPS.app[app],
-					linkId: "link_" + APPS.app[app]
+					id: appName,
+					appName: appName,
+					isChecked: DATA["apps"] !== undefined && DATA["apps"][appName] !== undefined ? DATA["apps"][appName] === true : false,
+					appLink: "#/apps/app/" + appName,
+					linkId: "link_" + appName,
+					displayClass: applyClass
 				});
 			}
 		}else{
-
 			data.isList = false;
 			data.route = params.app_name;
 		}
@@ -115,23 +117,23 @@ App.ApplController = Ember.ObjectController.extend({
 	}.property("model"),
 
 	fieldDataObserver: function() {
-		var self = this, model = self.get('model'), dataObj;
+		var self = this, model = self.get('model'), dataObj, key = "appls";
 		if(model.route === undefined) { return ;}
-		if (Ember.isNone(DATA["apps"])) { DATA["apps"] = {}; }
-		if(Ember.isNone(DATA["apps"][model.route])){ DATA["apps"][model.route] = {}; }
+		if (Ember.isNone(DATA[key])) { DATA[key] = {}; }
+		if(Ember.isNone(DATA[key][model.route])){ DATA[key][model.route] = {}; }
 
-		DATA["apps"][model.route]["fields"] = self.get("fields");
-		DATA["apps"][model.route]["tabGroups"] = {};
+		DATA[key][model.route]["fields"] = self.get("fields");
+		DATA[key][model.route]["tabGroups"] = {};
 	}.observes("fields.@each.value"),
 
 	fileFieldDataObserver: function() {
-		var self = this, model = self.get('model');
+		var self = this, model = self.get('model'), key = "appls";
 		if(model.route === undefined) { return ;}
-		if (Ember.isNone(DATA["apps"])) { DATA["apps"] = {}; }
-		if(Ember.isNone(DATA["apps"][model.route])){ DATA["apps"][model.route] = {}; }
+		if (Ember.isNone(DATA[key])) { DATA[key] = {}; }
+		if(Ember.isNone(DATA[key][model.route])){ DATA[key][model.route] = {}; }
 
-		DATA["apps"][model.route]["files"] = self.get("fileFields");
-		DATA["apps"][model.route]["tabGroups"] = {};
+		DATA[key][model.route]["files"] = self.get("fileFields");
+		DATA[key][model.route]["tabGroups"] = {};
 	}.observes("fileFields.@each.value"),
 });
 
@@ -142,7 +144,6 @@ ROUTES.forEach(function(route){
 	App[r] = Ember.Route.extend({
 		content_model : {},
 		model: function(params){
-			console.log(params);
 			return getModels(route, params);
 		},
 		renderTemplate: function() {
@@ -165,8 +166,6 @@ ROUTES.forEach(function(route){
 			});
 		}
 	});
-
-
 
 	var c = route.toController();
 
@@ -225,10 +224,6 @@ ROUTES.forEach(function(route){
 		}.observes("fileFields.@each.value"),
 
 		appCheckObserver: function() {
-			// DATA["apps"] = this.get("apps");
-			// if (Ember.isNone(DATA["apps"])) {
-				// DATA["apps"] = {};
-			// }
 		}.observes("apps.@each.isChecked"),
 
 		actions: {
@@ -322,12 +317,17 @@ App.BetterCheckboxComponent = Ember.Component.extend({
 		var appName = $(event.target).attr("id");
 		var buttonVisibility = event.target.checked;
 		var selector = "a[data-link-id='link_{ATTR}']".replace("{ATTR}", $(event.target).attr("id"));
-		console.log(buttonVisibility);
+
 		if (buttonVisibility) {
 			$(selector).show();
 		} else {
 			$(selector).hide();
 		}
+		
+		// REMEMBER CHOICE TO RECREATE IT ON RENDER PAGE
+		if (Ember.isNone(DATA["apps"])){ DATA["apps"] = {};}
+		DATA["apps"][appName] = buttonVisibility;
+		
 		this._updateElementValue();
 		this.sendAction('action', this.get('value'), this.get('checked'));
 	},

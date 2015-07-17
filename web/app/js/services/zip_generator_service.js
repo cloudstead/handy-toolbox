@@ -10,6 +10,7 @@ ZipGeneratorService = {
 		geoip: new GeoIPDataProcessorService(),
 		claim: new ClaimDataProcessorService(),
 		apps: new AppsDataProcessorService(),
+		appls: new ApplsDataProcessorService()
 	},
 
 	generateFolderStructure: function() {
@@ -65,8 +66,10 @@ ZipGeneratorService = {
 				case "claim":
 					secondaryData = cloudosJSON;
 					break;
-				case "apps":
+				case "appls":
 					outputFolder = folders.dataBags.folder("apps");
+					break;
+				case "apps":
 					break;
 			}
 

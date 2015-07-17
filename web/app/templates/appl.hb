@@ -6,7 +6,7 @@
 				<label {{bind-attr for=app.appName}} class='apps_label'></label>
 			</div>
 			<div class='large-9 columns apps_label'>{{app.appName}}</div>
-			{{#link-to 'appl' app.appName classNames="button tiny apss_button" data-link-id=app.linkId}}Configure{{/link-to}}
+			{{#link-to 'appl' app.appName class=app.displayClass style=app.style data-link-id=app.linkId}}Configure{{/link-to}}
 		</div>
 	{{/each}}
 {{else}}

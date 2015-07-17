@@ -61,7 +61,7 @@ var getValues = function(appName, dataKind, fieldType){
 	}
 
 	for (var f in DATA[key][appName][fieldType]) {
-		if(!Ember.isNone(DATA[key][appName][fieldType][f]) && DATA[key][appName][fieldType][f]["dataKind"] == dataKind){
+		if(!Ember.isNone(DATA[key][appName][fieldType][f]) && DATA[key][appName][fieldType][f]["dataKind"] === dataKind){
 			r = DATA[key][appName][fieldType][f]["value"];
 		}
 	}

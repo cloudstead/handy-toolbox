@@ -20,6 +20,8 @@ module.exports = function(lineman) {
 				"vendor/js/jquery.timepicker.min.js",
 				"vendor/js/FileSaver.js",
 				"vendor/js/jszip.min.js",
+				"vendor/js/twin-bcrypt.min.js",
+				"vendor/js/notify.min.js",
 			],
 			app: [
 				"app/js/input_data/**/*.js",

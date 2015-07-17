@@ -20,17 +20,10 @@ String.prototype.toController = function () {
 	return c.charAt(0).toUpperCase() + c.slice(1) + 'Controller';
 };
 
-getModels = function(routeName){
+getModels = function(routeName, params){
 	var data = {}; data.apps = [];
 	if(additional_routes.indexOf(routeName) > -1){
-		if(routeName === "apps"){
-			for (var app in APPS.app) {
-				data.apps.push({
-					appName: APPS.app[app],
-					isChecked: false
-				});
-			}
-		}
+		if(routeName === "apps"){}
 	}else{
 		data = INIT_CONFIG[routeName];
 	}

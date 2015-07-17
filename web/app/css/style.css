@@ -135,6 +135,7 @@ a {
 .wiz_dns_tab {
   margin-right: 13px !important;
   margin-left: 13px !important;
+  margin-bottom: 13px !important;
 }
 .wiz_dns_tab_bottom {
   margin-bottom: 13px !important;
@@ -151,4 +152,14 @@ a {
 
 .clear_fix {
   clear: both;
+}
+
+.apps_label{
+	margin-top: 5px;
+}
+
+.apss_button{
+	float: right;
+	margin-bottom: 0px;
+	display: none;
 }

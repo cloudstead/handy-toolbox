@@ -19,6 +19,13 @@ App.SubTabModel = Ember.Object.extend({
 		if (this.get("isActive")) {
 			$("#"+this.get("tabContentId")).fadeIn();
 			$("#"+this.get("tabName")).addClass("active");
+
+			// ON EVENTS ON NEW ACTIVE TAB
+			$.each(Validator.ElementsOnActiveTab(), function(index, elem){
+				$(elem).bind("focusout", function(e) {
+					Validator.ValidateField(e.target);
+				});
+			});
 		} else {
 			$("#"+this.get("tabName")).removeClass("active");
 			$("#"+this.get("tabContentId")).css("display", "none");
@@ -43,8 +50,6 @@ App.SubTabModel = Ember.Object.extend({
 				readURL($("#"+field.get("elementId"))[0], fields, index);
 			}
 		});
-
-		console.log("DATA: ", DATA);
 	}.observes("isActive","tabFields.@each.value"),
 
 	isExclusive: function() {

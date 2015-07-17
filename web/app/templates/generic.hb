@@ -44,6 +44,8 @@
 									title=field.info
 									class="large-5 columns wiz_dns_tab"
 									data-element-id=field.elementId
+									data-kind=field.type.typeKind
+									data-required=field.required
 								}}
 							</label>
 						{{/if}}
@@ -116,6 +118,8 @@
 														title=field.info
 														class="large-5 columns wiz_dns_tab"
 														data-element-id=field.elementId
+														data-kindtab=field.type.typeKind
+														data-required=field.required
 													}}
 												</label>
 											{{/if}}

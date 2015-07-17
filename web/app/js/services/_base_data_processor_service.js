@@ -3,6 +3,7 @@ BaseDataProcessorService = function() {
 
 BaseDataProcessorService.prototype.extractFields = function(dataObj, initObj) {
 	var retObj = initObj;
+	var self = this;
 
 	if (!Ember.isNone(dataObj["fields"])) {
 
@@ -16,10 +17,13 @@ BaseDataProcessorService.prototype.extractFields = function(dataObj, initObj) {
 				hours = valArray[valArray.length - 1] === "PM" ? hours + 12 : hours;
 				retObj[field.elementId] = "" + minutes + " " + hours + " * * * *";
 			} else {
-				retObj[field.elementId] = field.get("value");
+				var value = field.get("value");
+				if(field.get("type").typeName === "password"){
+					var hash = self.encryptData(value);
+					retObj[field.elementId] = Ember.isNone(hash) ? value : hash;
+				}else { retObj[field.elementId] = value; }
 			}
 		});
-
 	}
 
 
@@ -42,10 +46,28 @@ BaseDataProcessorService.prototype.extractFields = function(dataObj, initObj) {
 	return retObj;
 };
 
+
 BaseDataProcessorService.prototype.findFieldIn = function(fieldsArray, fieldName) {
 	return fieldsArray.find(function(field){
 		var elementIdArray = field.get("elementId").split("/");
 		var elementId = elementIdArray[elementIdArray.length - 1];
 		return elementId === fieldName;
 	});
+};
+
+BaseDataProcessorService.prototype.encryptData = function(data) {
+	var salt, hash;
+	try{
+		salt = TwinBcrypt.genSalt(9);
+	}catch(err){
+		console.log("Generate salt error: ", err);
+		salt = "";
+	}
+	try{
+		hash = TwinBcrypt.hashSync( data, salt);
+	}catch(err){
+		console.log("Generate hash error: ", err);
+		hash = undefined;
+	}
+	return hash;
 };

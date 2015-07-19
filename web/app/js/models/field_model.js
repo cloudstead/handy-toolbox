@@ -26,7 +26,9 @@ App.FieldModel = Ember.Object.extend({
 			'list/ipaddr': 'text',
 			'pick_one': 'choice',
 			'cron': 'text',
-			'file': 'file'
+			'file': 'file',
+			'locale': 'choice',
+			'yesno': 'checkbox'
 		};
 
 		if(!INPUT_TYPES.hasOwnProperty(fieldType)){
@@ -47,12 +49,16 @@ App.FieldModel = Ember.Object.extend({
 	}.property(),
 
 	isChoice: function() {
-		return this.get("type").typeKind === 'pick_one';
+		return this.get("type").typeKind === 'pick_one' || this.get("type").typeKind === 'locale';
 	}.property(),
 
 	isTimeOfDay: function() {
 		return this.get("type").typeKind === 'cron';
 	}.property(),
+
+	isCheckBox: function(){
+		return this.get("type").typeKind === 'yesno';
+	}.property()
 });
 
 App.FieldModel.reopenClass({
@@ -79,7 +85,7 @@ App.FieldModel.reopenClass({
 		return retChoices;
 	},
 
-	createNew: function(fieldName, fieldData, translation) {
+	createNew: function(fieldName, fieldData, translation, values) {
 		if (Ember.isNone(translation)) {
 			translation = {
 				label: fieldName,
@@ -92,7 +98,7 @@ App.FieldModel.reopenClass({
 			info: Ember.String.htmlSafe(translation['info']),
 			fieldType: fieldData.type,
 			fieldFilePath: fieldData.additional,
-			value: "",
+			value: values !== undefined ? values : "",
 			fileData: "",
 			choices: App.FieldModel.resolveChoices(fieldData.choices, translation),
 			dataKind: fieldName,
@@ -194,6 +200,92 @@ App.FieldModel.reopenClass({
 			fieldsArray.push(newField);
 
 		});
+
+		return fieldsArray;
+	},
+
+	createAppFields: function(fieldAppName){
+
+		var jsonURL, fieldsData = {}, fieldData, translationURL, newField, fileData, translation = {}, fieldsArray = [],
+			fileKind = 'fields', values = "";
+
+		// GET TRANSLATIONS
+		translationURL = APPS_DATA_PATH + fieldAppName + "/" + TRANSLATION_FILENAME;
+		$.ajax({
+			dataType: "json",
+			url: translationURL,
+			async: false,
+			success: function (data) { fileData = data; }
+		});
+
+		if(fileData !== undefined){
+			for(var transs in fileData["categories"]){
+				for(var transItem in fileData["categories"][transs]){
+					translation[transItem] = fileData["categories"][transs][transItem];
+				}
+			}
+		}
+
+		// CREATE FIELDS
+		fileData = undefined;
+		jsonURL = APPS_DATA_PATH + fieldAppName + "/" + METADATA_FILENAME;
+		$.ajax({
+			dataType: "json",
+			url: jsonURL,
+			async: false,
+			success: function (data) { fileData = data; }
+		});
+
+		if(fileData === undefined){ return;}
+		for(var category in fileData["categories"]){
+			for(var fieldName in fileData["categories"][category][fileKind]){
+				values = getValues(fieldAppName, fieldName, fileKind );
+				newField = App.FieldModel.createNew(fieldName, fileData["categories"][category][fileKind][fieldName], translation[fieldName], values);
+				fieldsArray.push(newField);
+			}
+		}
+
+		return fieldsArray;
+	},
+
+	createFileAppFields: function(fieldAppName) {
+		var fileKind = 'files', fileData, jsonURL, newField, fieldsArray = [], translation = {}, translationURL;
+
+		// GET TRANSLATIONS
+		translationURL = APPS_DATA_PATH + fieldAppName + "/" + TRANSLATION_FILENAME;
+		$.ajax({
+			dataType: "json",
+			url: translationURL,
+			async: false,
+			success: function (data) { fileData = data; }
+		});
+
+		if(fileData !== undefined){
+			for(var trans in fileData["categories"]){
+				for(var transItem in fileData["categories"][trans]){
+					translation[transItem] = fileData["categories"][trans][transItem];
+				}
+			}
+		}
+
+		// CREATE FILE FIELDS
+		jsonURL = APPS_DATA_PATH + fieldAppName + "/" + METADATA_FILENAME;
+		$.ajax({
+			dataType: "json",
+			url: jsonURL,
+			async: false,
+			success: function (data) { fileData = data; }
+		});
+
+		if(fileData === undefined){ return;}
+		for(var category in fileData["categories"]){
+			for(var fieldName in fileData["categories"][category][fileKind]){
+				console.log("FILE => ", fieldName);
+				newField = App.FieldModel.createNew(fieldName, fileData, translation[fieldName]);
+				console.log("fieldName ==> FILE", fieldName);
+				fieldsArray.push(newField);
+			}
+		}
 
 		return fieldsArray;
 	},

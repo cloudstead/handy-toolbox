@@ -5,5 +5,5 @@ AppsDataProcessorService = function() {
 AppsDataProcessorService.prototype = new BaseDataProcessorService();
 
 AppsDataProcessorService.prototype.process = function(dataToProcess, ouputFolder, extensionData) {
-
+	
 };

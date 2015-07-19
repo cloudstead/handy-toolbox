@@ -11,4 +11,4 @@ if [ $(whoami) != "root" ] ; then
   die "Must run as root"
 fi
 
-apt-get install -y pandoc zip wkhtmltopdf xorg xvfb
+apt-get install -y pandoc zip wkhtmltopdf xorg xvfb hfsprogs

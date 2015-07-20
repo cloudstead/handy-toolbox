@@ -30,6 +30,7 @@ fi
 APPSTORE_BASE="${CLOUDOS_DIR}/cloudos-appstore"
 APPSTORE_COMMON="${APPSTORE_BASE}/appstore-common"
 CLOUDOS_SERVER="${CLOUDOS_DIR}/cloudos-server"
+CLOUDOS_LAUNCHER="${CLOUDOS_DIR}/cloudos-launcher"
 BUNDLER_JAR="${APPSTORE_COMMON}/target/cloudos-app-bundler.jar"
 CLOUDOS_APPS="${CLOUDOS_DIR}/cloudos-apps"
 CLOUDOS_TARBALL="${CLOUDOS_SERVER}/target/cloudos-server.tar.gz"
@@ -43,7 +44,8 @@ cd ${APPSTORE_COMMON} && \
 cd ${CLOUDOS_APPS} && \
   CLOUDOS_BUNDLER_JAR=${BUNDLER_JAR} ${APPSTORE_BASE}/bin/mcbundle ./apps && \
 cd ${CLOUDOS_DIR} &&
-  ./prep.sh cloudos-server ${CLOUDOS_SERVER}/target
+  ./prep.sh cloudos-server ${CLOUDOS_SERVER}/target && \
+  mkdir -p ${CLOUDOS_LAUNCHER}/dist && ./prep.sh cloudos-launcher ${CLOUDOS_LAUNCHER}/dist
 
 if [ ! -f ${CLOUDOS_TARBALL} ] ; then
   die "Error building cloudos-server"
